@@ -1,0 +1,131 @@
+Source: ngtcp2
+Section: libs
+Priority: optional
+Maintainer: Debian Curl Maintainers <team+curl@tracker.debian.org>
+Uploaders:
+ Sakirnth Nagarasa <sakirnth@debian.org>,
+Build-Depends:
+ debhelper-compat (= 13),
+ libcunit1-dev,
+ libgnutls28-dev (>= 3.7.2),
+ libssl-dev (>= 3.5.1),
+ pkgconf,
+Rules-Requires-Root: no
+Standards-Version: 4.7.3
+Homepage: https://github.com/ngtcp2/ngtcp2
+Vcs-Browser: https://salsa.debian.org/debian/ngtcp2
+Vcs-Git: https://salsa.debian.org/debian/ngtcp2.git
+
+Package: libngtcp2-16
+Section: libs
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: QUIC protocol library
+ ngtcp2 project is an implementation of QUIC protocol,
+ standardized in RFC 9000.
+ .
+ QUIC is a transport protocol that multiplexes stream of
+ data over UDP, providing low-latency, secure and reliable
+ connections.
+ .
+ This package contains the shared library.
+
+Package: libngtcp2-crypto-gnutls-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends:
+ libngtcp2-crypto-gnutls8 (= ${binary:Version}),
+ ${misc:Depends},
+Description: development files for crypto helper library (GnuTLS)
+ ngtcp2 project is an implementation of QUIC protocol,
+ standardized in RFC 9000.
+ .
+ QUIC is a transport protocol that multiplexes stream of
+ data over UDP, providing low-latency, secure and reliable
+ connections.
+ .
+ This package contains the development files.
+ .
+ TLS support is provided by GnuTLS.
+
+Package: libngtcp2-crypto-gnutls8
+Section: libs
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: crypto helper library for with GnuTLS backend
+ ngtcp2 project is an implementation of QUIC protocol,
+ standardized in RFC 9000.
+ .
+ QUIC is a transport protocol that multiplexes stream of
+ data over UDP, providing low-latency, secure and reliable
+ connections.
+ .
+ This package contains the shared library.
+ .
+ TLS support is provided by GnuTLS.
+
+Package: libngtcp2-crypto-ossl-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends:
+ libngtcp2-crypto-ossl0 (= ${binary:Version}),
+ ${misc:Depends},
+Description: development files for crypto helper library (OpenSSL)
+ ngtcp2 project is an implementation of QUIC protocol,
+ standardized in RFC 9000.
+ .
+ QUIC is a transport protocol that multiplexes stream of
+ data over UDP, providing low-latency, secure and reliable
+ connections.
+ .
+ This package contains the development files.
+ .
+ TLS support is provided by OpenSSL.
+
+Package: libngtcp2-crypto-ossl0
+Section: libs
+Architecture: any
+Multi-Arch: same
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: crypto helper library for with OpenSSL backend
+ ngtcp2 project is an implementation of QUIC protocol,
+ standardized in RFC 9000.
+ .
+ QUIC is a transport protocol that multiplexes stream of
+ data over UDP, providing low-latency, secure and reliable
+ connections.
+ .
+ This package contains the shared library.
+ .
+ TLS support is provided by OpenSSL.
+
+Package: libngtcp2-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Conflicts:
+ libngtcp2-crypto-gnutls-dev (<< 1.16.0-1~exp1~),
+Replaces:
+ libngtcp2-crypto-gnutls-dev (<< 1.16.0-1~exp1~),
+Depends:
+ libngtcp2-16 (= ${binary:Version}),
+ ${misc:Depends},
+Description: development files for QUIC protocol library
+ ngtcp2 project is an implementation of QUIC protocol,
+ standardized in RFC 9000.
+ .
+ QUIC is a transport protocol that multiplexes stream of
+ data over UDP, providing low-latency, secure and reliable
+ connections.
+ .
+ This package contains the development files.

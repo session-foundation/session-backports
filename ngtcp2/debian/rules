@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+
+%:
+	dh ${@}
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		--with-gnutls \
+		--with-openssl
+
+execute_after_dh_install:
+	# README.rst installation must be handled properly to avoid conflict
+	# it was in binary package ngtcp2-server before removal in version
+	# 1.6.0-1~exp1, therefore delete for now
+	rm -f debian/tmp/usr/lib/*/*.la \
+		debian/tmp/usr/share/doc/ngtcp2/README.rst

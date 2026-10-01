@@ -1,0 +1,284 @@
+ngtcp2 (1.24.0-1) unstable; urgency=medium
+
+  * New upstream version 1.24.0
+  * d/libngtcp2-16.symbols: New symbols.
+  * d/libngtcp2-crypto-gnutls8.symbols: Reorder symbol:
+    - ngtcp2_crypto_get_path_challenge_data_cb@Base.
+  * d/libngtcp2-crypto-ossl0.symbols:
+    - Reorder symbol: ngtcp2_crypto_get_path_challenge_data_cb@Base.
+    - Adding symbol: ngtcp2_crypto_ossl_free@Base.
+  * d/copyright: Remove stanza for removed files.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Wed, 15 Jul 2026 22:58:35 +0200
+
+ngtcp2 (1.22.1-1) unstable; urgency=high
+
+  * Team upload
+  * New upstream version 1.22.1
+    - Fix CVE-2026-40170 (closes: #1134197)
+  * Add "Build-Depends-Package" field to symbols files
+  * Add new symbols from 1.22.0:
+     ngtcp2_conn_continue_handshake
+     ngtcp2_conn_get_active_dcid2
+     ngtcp2_pkt_write_stateless_reset2
+     ngtcp2_crypto_get_path_challenge_data2_cb
+
+ -- Samuel Henrique <samueloph@debian.org>  Sat, 18 Apr 2026 16:03:43 -0700
+
+ngtcp2 (1.21.0-1) unstable; urgency=medium
+
+  * New upstream version 1.21.0
+  * d/libngtcp2-16.symbols: New symbols:
+    - ngtcp2_conn_get_stream_user_data@Base
+    - ngtcp2_conn_write_aggregate_pkt2_versioned@Base.
+  * d/libngtcp2-crypto-gnutls8.symbols: New symbols:
+    - ngtcp2_crypto_generate_regular_token2@Base
+    - ngtcp2_crypto_verify_regular_token2@Base.
+  * d/libngtcp2-crypto-ossl0.symbols: New symbols:
+    - ngtcp2_crypto_generate_regular_token2@Base
+    - ngtcp2_crypto_verify_regular_token2@Base.
+  * d/control: Updating Standards-Version.
+  * Adding d/salsa-ci.yml to activate pipeline.
+  * d/copyright: Updating copyright years and files.
+  * d/copyright: Correcting license for m4/ax_check_compile_flag.m4.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Sat, 07 Mar 2026 19:59:50 +0100
+
+ngtcp2 (1.16.0-1) unstable; urgency=medium
+
+  * d/control: Make conflicts/replaces bpo-friendly (Closes: #1116529).
+  * d/NEWS: Correcting typo.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Thu, 02 Oct 2025 17:00:03 +0200
+
+ngtcp2 (1.16.0-1~exp1) experimental; urgency=medium
+
+  * d/gbp.conf: Configure pristine-tar defaults.
+  * d/gbp.conf: upstream-branch.
+  * New upstream version 1.16.0
+  * Removing ngtcp2-server and ngtcp2-client example binary packages.
+    - Maintaining example binaries with additional TLS backend does
+      not scale anymore.
+    - d/control:
+      ~ Removing ngtcp2-server and ngtcp2-client sections.
+      ~ Updating Build-Depends.
+    - d/ngtcp2-client.install: Removing file.
+    - d/ngtcp2-server.install: Removing file.
+    - d/ngtcp2-server.ngtcp2d.service: Removing systemd service file.
+    - d/rules: Removing entries regarding example binary packages.
+    - d/NEWS: Add to inform users about this change.
+  * Provide additional crypto helper library with OpenSSL (Closes: #1115606).
+    - d/rules: Add OpenSSL configure option.
+    - d/control: Update Build-Depends for OpenSSL crypto helper library.
+    - d/control: Adding binary package libngtcp2-crypto-ossl0.
+    - d/control: Adding binary package libngtcp2-crypto-ossl-dev.
+    - d/libngtcp2-crypto-gnutls8.install: Select files more accurate
+      to support other crypto helper libraries.
+    - d/libngtcp2-crypto-gnutls-dev.install: Select files more accurate
+      to support other crypto helper development packages.
+    - Adding: d/libngtcp2-crypto-ossl0.install.
+    - Adding: d/libngtcp2-crypto-ossl-dev.install.
+    - Move header file to the correct -dev package.
+      ~ d/control: Add Breaks/Replaces to libngtcp2-dev for
+      libngtcp2-crypto-gnutls-dev.
+      ~ d/libngtcp2-dev.install: Include header file in this package.
+  * d/control: Update short and long descriptions.
+  * d/libngtcp2-crypto-ossl0.symbols: Add new symbol file.
+  * Reformat d/ files with wrap-and-sort -bast.
+  * d/copyright: Updating authors and years.
+  * Update maintainer contact information.
+  * d/rules: Not installing README.rst yet.
+  * d/libngtcp2-16.symbols: New symbol ngtcp2_conn_get_timestamp@Base.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Thu, 25 Sep 2025 07:40:56 +0200
+
+ngtcp2 (1.15.1-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream version 1.15.1
+  * d/control: Bump B-D libnghttp3-dev to 1.11.0
+  * d/libngtcp2-16.symbols: New symbol
+    ngtcp2_conn_write_aggregate_pkt_versioned@Base
+
+ -- Samuel Henrique <samueloph@debian.org>  Fri, 05 Sep 2025 19:04:27 +0100
+
+ngtcp2 (1.12.0-1~exp1) experimental; urgency=medium
+
+  * Team upload
+  * New upstream version 1.12.0
+
+ -- Samuel Henrique <samueloph@debian.org>  Wed, 16 Apr 2025 22:07:07 +0100
+
+ngtcp2 (1.11.0-1) unstable; urgency=medium
+
+  [ Matheus Polkorny ]
+  * d/upstream/signing-key.asc: Upstream public key.
+  * d/watch: Add debian/watch file.
+
+  [ Sakirnth Nagarasa ]
+  * New upstream version 1.11.0.
+  * d/gbp.conf: Adding debian/unstable as default branch.
+  * d/control: Updating Standards-Version.
+  * d/control: Updating Vsc path.
+  * d/copyright: Updating years and authors for debian/*.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Sat, 01 Mar 2025 14:51:39 +0100
+
+ngtcp2 (1.9.1-1) sid; urgency=medium
+
+  * New upstream version 1.9.1.
+    - Fix CVE-2024-52811 qlog buffer overflow.
+  * d/libngtcp2-crypto-gnutls8.symbols: Adding new symbols.
+  * d/copyright: Updating authors.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Tue, 26 Nov 2024 17:35:47 +0100
+
+ngtcp2 (1.6.0-1) sid; urgency=medium
+
+  * New upstream version 1.6.0.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Thu, 25 Jul 2024 11:55:21 +0200
+
+ngtcp2 (1.5.0-2) sid; urgency=medium
+
+  * Uploading to sid.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Fri, 28 Jun 2024 17:46:38 +0200
+
+ngtcp2 (1.5.0-1) experimental; urgency=medium
+
+  * New upstream version 1.5.0.
+  * d/copyright: Updated for new version.
+  * d/control
+    - Changed Build-Depends from pkg-config to pkgconf.
+    - Added Debian Curl Maintainers as Maintainer.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Sun, 12 May 2024 20:03:53 +0200
+
+ngtcp2 (1.1.0-1) experimental; urgency=medium
+
+  * Uploading to experimental.
+  * Merging upstream version 1.1.0.
+  * Renamed d/libngtcp2-15.install to d/libngtcp2-16.install.
+  * Renamed d/libngtcp2-crypto-gnutls7.install to
+    d/libngtcp2-crypto-gnutls8.install.
+  * d/control:
+    - Updated binary packages name because of soname bump.
+    - Updated build-depends and depends because of soname bump.
+  * Removed d/libngtcp2-15.symbols and d/libngtcp2-crypto-gnutls7.symbols.
+  * Added d/libngtcp2-16.symbols and d/libngtcp2-crypto-gnutls8.symbols.
+  * d/changelog:
+    - Correcting 0.19.1-1 Standards-Version was not updated.
+    - Correcting 0.19.1-1 d/README.source was not removed.
+  * Removed d/README.source because js-minfied code was removed.
+  * d/copyright: Adding copyright changes and update year from d/*.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Mon, 08 Jan 2024 16:34:04 +0100
+
+ngtcp2 (0.19.1-1) experimental; urgency=medium
+
+  * Uploading to experimental.
+  * Merging upstream version 0.19.1.
+  * Renamed d/libngtcp2-9.install to d/libngtcp2-15.install.
+  * Renamed d/libngtcp2-crypto-gnutls2.install to
+    d/libngtcp2-crypto-gnutls7.install.
+  * d/control:
+    - Updated binary packages name because of soname bump.
+    - Updated build-depends and depends because of soname bump.
+  * Removed d/libngtcp2-9.symbols and d/libngtcp2-crypto-gnutls2.symbols.
+  * Added d/libngtcp2-15.symbols and d/libngtcp2-crypto-gnutls7.symbols.
+  * d/copyright: Remove Files-Excluded because js-minfied code was removed.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Fri, 08 Sep 2023 13:37:28 +0200
+
+ngtcp2 (0.12.1+dfsg-1) sid; urgency=medium
+
+  * Uploading to sid.
+  * Merging upstream version 0.12.1+dfsg.
+  * d/changelog: Updating entry 0.12.0+dfsg-1 (Standards-Version).
+  * Source-only upload to allow testing migration.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Fri, 06 Jan 2023 21:07:55 +0100
+
+ngtcp2 (0.12.0+dfsg-1) experimental; urgency=medium
+
+  * Uploading to experimental.
+  * Merging upstream version 0.12.0+dfsg.
+  * Renamed d/libngtcp2-7.install to d/libngtcp2-9.install.
+  * d/control:
+    - Updated binary packages name because of soname bump.
+    - Updated build-depends and depends because of soname bump.
+    - Updating Standards-Version.
+  * Removed d/libngtcp2-7.symbols.
+  * Added d/libngtcp2-9.symbols.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Sun, 01 Jan 2023 20:58:42 +0100
+
+ngtcp2 (0.8.0+dfsg-2) sid; urgency=medium
+
+  * Uploading to sid.
+  * Source-only upload to allow testing migration.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Wed, 14 Sep 2022 19:11:54 +0200
+
+ngtcp2 (0.8.0+dfsg-1) experimental; urgency=medium
+
+  * Uploading to experimental.
+  * Merging upstream version 0.8.0+dfsg.
+  * d/control:
+    - Updated binary packages name because of soname bump.
+    - Updated build-depends and depends because of soname bump.
+  * Removed d/libngtcp2-1.symbols and d/libngtcp2-crypto-gnutls1.symbols.
+  * Renamed d/libngtcp2-crypto-gnutls1.install to
+    d/libngtcp2-crypto-gnutls2.install.
+  * Renamed d/libngtcp2-1.install to d/libngtcp2-7.install.
+  * Added d/libngtcp2-7.symbols and d/libngtcp2-crypto-gnutls2.symbols.
+  * d/copyright: Updated copyright for this version.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Sat, 27 Aug 2022 20:19:16 +0200
+
+ngtcp2 (0.2.1+dfsg-3) sid; urgency=medium
+
+  * Add d/libngtcp2-1.symbols file.
+  * Add d/libngtcp2-crypto-gnutls1.symbols file.
+  * Add d/README.source to document the reason for dfsg compatible source.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Tue, 21 Jun 2022 14:26:22 +0200
+
+ngtcp2 (0.2.1+dfsg-2) sid; urgency=medium
+
+  * Uploading to sid.
+  * d/control: Updating Standards-Version.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Mon, 16 May 2022 11:31:37 +0200
+
+ngtcp2 (0.2.1+dfsg-1) experimental; urgency=medium
+
+  * Uploading to experimental.
+  * Merging upstream version 0.2.1+dfsg.
+  * Removed sphinx_rtd_theme non-compliant files from source.
+  * d/control:
+    - Updating binary packages name because of soname bump.
+    - Updating Build-Depends and Depends because of soname bump.
+  * d/copyright: Updating copyright for this version.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Mon, 28 Mar 2022 11:41:58 +0200
+
+ngtcp2 (0.1.0+dfsg-1) sid; urgency=medium
+
+  * Uploading to sid.
+  * Merging upstream version 0.1.0+dfsg.
+  * Removed sphinx_rtd_theme non-compliant files from source.
+  * d/copyright:
+    - Updating copyright for this version.
+    - Adding Files_Excluded field to exclude non-compliant files.
+  * d/control: Updating libnghttp3-dev Build-Depends version.
+  * d/rules: Changing override_dh_install to execute_before_dh_install.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Thu, 10 Feb 2022 12:47:32 +0100
+
+ngtcp2 (0~20210905-1) sid; urgency=medium
+
+  * Initial release (Closes: #932151).
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Mon, 06 Sep 2021 09:38:53 +0200

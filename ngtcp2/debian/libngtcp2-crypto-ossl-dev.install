@@ -1,0 +1,4 @@
+usr/include/*/*crypto_ossl*
+usr/lib/*/*crypto_ossl.a
+usr/lib/*/*crypto_ossl.so
+usr/lib/*/pkgconfig/*crypto_ossl*

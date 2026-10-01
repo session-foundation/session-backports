@@ -1,0 +1,8 @@
+ngtcp2 (1.16.0-1~exp1) experimental; urgency=medium
+
+  The binary packages ngtcp2-server and ngtcp2-client previously shipped
+  were example binaries. They were only intended for demonstration purposes
+  using the GnuTLS backend. With the additional support of OpenSSL backend
+  the maintenance does not scale anymore. Therefore they have been removed.
+
+ -- Sakirnth Nagarasa <sakirnth@debian.org>  Wed, 24 Sep 2025 22:07:37 +0200

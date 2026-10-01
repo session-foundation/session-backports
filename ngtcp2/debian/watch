@@ -1,0 +1,7 @@
+version=4
+opts="searchmode=plain,\
+      pgpsigurlmangle=s%$%.asc%,\
+      filenamemangle=s%v?(?:[-_]?[Vv]?(\d[\-+\.:\~\da-zA-Z]*))%ngtcp2-$1.tar.xz%,\
+      uversionmangle=s/(\d)[_\.\-\+]?((RC|rc|pre|dev|beta|alpha|a|b)\d*)$/$1~$2/" \
+https://api.github.com/repos/ngtcp2/@PACKAGE@/releases?per_page=100 \
+https://github.com/ngtcp2/@PACKAGE@/releases/download/v(?:\d[\d.]*)/@PACKAGE@@ANY_VERSION@@ARCHIVE_EXT@
