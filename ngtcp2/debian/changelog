@@ -1,3 +1,9 @@
+ngtcp2 (1.25.0-0+stf1) unstable; urgency=medium
+
+  * Session backport of new upstream version 1.25.0.
+
+ -- Jason Rhinelander <jason@session.foundation>  Thu, 01 Oct 2026 20:55:41 -0300
+
 ngtcp2 (1.24.0-1) unstable; urgency=medium
 
   * New upstream version 1.24.0

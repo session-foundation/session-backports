@@ -1,0 +1,146 @@
+Builds without ngtcp2's OpenSSL crypto backend, which needs OpenSSL's QUIC API (OpenSSL 3.5 or
+newer): drops the libngtcp2-crypto-ossl0 and libngtcp2-crypto-ossl-dev packages and the
+libssl-dev build dependency, and configures with --without-openssl, since configure would
+otherwise go looking for it.  Applied by package.bash on distros with an older OpenSSL.
+
+diff -urN a/debian/control b/debian/control
+--- a/debian/control	2026-07-15 17:58:35.000000000 -0300
++++ b/debian/control	2026-10-01 20:55:15.299765324 -0300
+@@ -8,7 +8,6 @@
+  debhelper-compat (= 13),
+  libcunit1-dev,
+  libgnutls28-dev (>= 3.7.2),
+- libssl-dev (>= 3.5.1),
+  pkgconf,
+ Rules-Requires-Root: no
+ Standards-Version: 4.7.3
+@@ -71,44 +70,6 @@
+  .
+  TLS support is provided by GnuTLS.
+ 
+-Package: libngtcp2-crypto-ossl-dev
+-Section: libdevel
+-Architecture: any
+-Multi-Arch: same
+-Depends:
+- libngtcp2-crypto-ossl0 (= ${binary:Version}),
+- ${misc:Depends},
+-Description: development files for crypto helper library (OpenSSL)
+- ngtcp2 project is an implementation of QUIC protocol,
+- standardized in RFC 9000.
+- .
+- QUIC is a transport protocol that multiplexes stream of
+- data over UDP, providing low-latency, secure and reliable
+- connections.
+- .
+- This package contains the development files.
+- .
+- TLS support is provided by OpenSSL.
+-
+-Package: libngtcp2-crypto-ossl0
+-Section: libs
+-Architecture: any
+-Multi-Arch: same
+-Depends:
+- ${misc:Depends},
+- ${shlibs:Depends},
+-Description: crypto helper library for with OpenSSL backend
+- ngtcp2 project is an implementation of QUIC protocol,
+- standardized in RFC 9000.
+- .
+- QUIC is a transport protocol that multiplexes stream of
+- data over UDP, providing low-latency, secure and reliable
+- connections.
+- .
+- This package contains the shared library.
+- .
+- TLS support is provided by OpenSSL.
+-
+ Package: libngtcp2-dev
+ Section: libdevel
+ Architecture: any
+diff -urN a/debian/libngtcp2-crypto-ossl0.install b/debian/libngtcp2-crypto-ossl0.install
+--- a/debian/libngtcp2-crypto-ossl0.install	2026-07-15 17:58:35.000000000 -0300
++++ b/debian/libngtcp2-crypto-ossl0.install	1969-12-31 20:00:00.000000000 -0400
+@@ -1 +0,0 @@
+-usr/lib/*/*crypto_ossl*.so.*
+diff -urN a/debian/libngtcp2-crypto-ossl0.symbols b/debian/libngtcp2-crypto-ossl0.symbols
+--- a/debian/libngtcp2-crypto-ossl0.symbols	2026-07-15 17:58:35.000000000 -0300
++++ b/debian/libngtcp2-crypto-ossl0.symbols	1969-12-31 20:00:00.000000000 -0400
+@@ -1,56 +0,0 @@
+-libngtcp2_crypto_ossl.so.0 libngtcp2-crypto-ossl0 #MINVER#
+-* Build-Depends-Package: libngtcp2-crypto-gnutls-dev
+- ngtcp2_crypto_aead_ctx_decrypt_init@Base 1.15.1
+- ngtcp2_crypto_aead_ctx_encrypt_init@Base 1.15.1
+- ngtcp2_crypto_aead_ctx_free@Base 1.15.1
+- ngtcp2_crypto_aead_keylen@Base 1.15.1
+- ngtcp2_crypto_aead_noncelen@Base 1.15.1
+- ngtcp2_crypto_client_initial_cb@Base 1.15.1
+- ngtcp2_crypto_ctx_tls@Base 1.15.1
+- ngtcp2_crypto_ctx_tls_early@Base 1.15.1
+- ngtcp2_crypto_decrypt@Base 1.15.1
+- ngtcp2_crypto_decrypt_cb@Base 1.15.1
+- ngtcp2_crypto_delete_crypto_aead_ctx_cb@Base 1.15.1
+- ngtcp2_crypto_delete_crypto_cipher_ctx_cb@Base 1.15.1
+- ngtcp2_crypto_derive_and_install_rx_key@Base 1.15.1
+- ngtcp2_crypto_derive_and_install_tx_key@Base 1.15.1
+- ngtcp2_crypto_encrypt@Base 1.15.1
+- ngtcp2_crypto_encrypt_cb@Base 1.15.1
+- ngtcp2_crypto_generate_regular_token2@Base 1.20.0
+- ngtcp2_crypto_generate_regular_token@Base 1.15.1
+- ngtcp2_crypto_generate_retry_token2@Base 1.15.1
+- ngtcp2_crypto_generate_retry_token@Base 1.15.1
+- ngtcp2_crypto_generate_stateless_reset_token@Base 1.15.1
+- ngtcp2_crypto_get_path_challenge_data2_cb@Base 1.22.0
+- ngtcp2_crypto_get_path_challenge_data_cb@Base 1.15.1
+- ngtcp2_crypto_hkdf@Base 1.15.1
+- ngtcp2_crypto_hkdf_expand@Base 1.15.1
+- ngtcp2_crypto_hkdf_extract@Base 1.15.1
+- ngtcp2_crypto_hp_mask@Base 1.15.1
+- ngtcp2_crypto_hp_mask_cb@Base 1.15.1
+- ngtcp2_crypto_md_hashlen@Base 1.15.1
+- ngtcp2_crypto_md_init@Base 1.15.1
+- ngtcp2_crypto_ossl_configure_client_session@Base 1.15.1
+- ngtcp2_crypto_ossl_configure_server_session@Base 1.15.1
+- ngtcp2_crypto_ossl_ctx_del@Base 1.15.1
+- ngtcp2_crypto_ossl_ctx_get_ssl@Base 1.15.1
+- ngtcp2_crypto_ossl_ctx_new@Base 1.15.1
+- ngtcp2_crypto_ossl_ctx_set_ssl@Base 1.15.1
+- ngtcp2_crypto_ossl_free@Base 1.24.0
+- ngtcp2_crypto_ossl_from_ngtcp2_encryption_level@Base 1.15.1
+- ngtcp2_crypto_ossl_from_ossl_encryption_level@Base 1.15.1
+- ngtcp2_crypto_ossl_init@Base 1.15.1
+- ngtcp2_crypto_packet_protection_ivlen@Base 1.15.1
+- ngtcp2_crypto_read_write_crypto_data@Base 1.15.1
+- ngtcp2_crypto_recv_client_initial_cb@Base 1.15.1
+- ngtcp2_crypto_recv_crypto_data_cb@Base 1.15.1
+- ngtcp2_crypto_recv_retry_cb@Base 1.15.1
+- ngtcp2_crypto_update_key@Base 1.15.1
+- ngtcp2_crypto_update_key_cb@Base 1.15.1
+- ngtcp2_crypto_verify_regular_token2@Base 1.20.0
+- ngtcp2_crypto_verify_regular_token@Base 1.15.1
+- ngtcp2_crypto_verify_retry_token2@Base 1.15.1
+- ngtcp2_crypto_verify_retry_token@Base 1.15.1
+- ngtcp2_crypto_version_negotiation_cb@Base 1.15.1
+- ngtcp2_crypto_write_connection_close@Base 1.15.1
+- ngtcp2_crypto_write_retry@Base 1.15.1
+diff -urN a/debian/libngtcp2-crypto-ossl-dev.install b/debian/libngtcp2-crypto-ossl-dev.install
+--- a/debian/libngtcp2-crypto-ossl-dev.install	2026-07-15 17:58:35.000000000 -0300
++++ b/debian/libngtcp2-crypto-ossl-dev.install	1969-12-31 20:00:00.000000000 -0400
+@@ -1,4 +0,0 @@
+-usr/include/*/*crypto_ossl*
+-usr/lib/*/*crypto_ossl.a
+-usr/lib/*/*crypto_ossl.so
+-usr/lib/*/pkgconfig/*crypto_ossl*
+diff -urN a/debian/rules b/debian/rules
+--- a/debian/rules	2026-07-15 17:58:35.000000000 -0300
++++ b/debian/rules	2026-10-01 20:55:09.151706602 -0300
+@@ -6,7 +6,7 @@
+ override_dh_auto_configure:
+ 	dh_auto_configure -- \
+ 		--with-gnutls \
+-		--with-openssl
++		--without-openssl
+ 
+ execute_after_dh_install:
+ 	# README.rst installation must be handled properly to avoid conflict
