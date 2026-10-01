@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+#
+# build-deb — builds one backport package for the distro it runs on.
+#
+# Usage: ./build-deb <package> <codename> <version-suffix>
+#
+#   <package>         the package's directory in this repo, e.g. ngtcp2
+#   <codename>        the distro being built for, e.g. trixie
+#   <version-suffix>  that distro's version suffix, e.g. ~deb13 (an empty string for sid)
+#
+# Meant to run as root in the distro's builder image: it configures apt and installs the build
+# dependencies.  The resulting packages are left in build/<package>/.
+#
+# The upstream version and tarball come from the session-deps recipe named by SESSION_DEP in
+# <package>/package.bash, and the Debian revision from the top entry of <package>/debian/changelog,
+# which must be for that same upstream version.  If <package>/package.bash defines a prepare
+# function, it is run in the unpacked source tree (with the packaging in place and the build
+# dependencies not yet installed), with the codename as its argument, to adapt the packaging to
+# the distro.
+#
+# Nothing is built if apt (with deb.session.foundation and its /staging repo added) already offers
+# the package's first binary package at the version being built or newer; build/<package>/ then
+# holds only an `already-published` marker, which ci-upload.sh takes as nothing to upload.
+
+set -euo pipefail
+
+die() { printf '\e[31;1merror:\e[0m %s\n' "$*" >&2; exit 1; }
+msg() { printf '\e[35;1m%s\e[0m\n' "$*" >&2; }
+
+[ $# -eq 3 ] || die "usage: $0 <package> <codename> <version-suffix>"
+package=$1 codename=$2 suffix=$3
+
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+pkgdir=$root/$package
+[ -f "$pkgdir/package.bash" ] && [ -d "$pkgdir/debian" ] ||
+    die "$package is not a package directory (no $package/package.bash or $package/debian/)"
+
+SESSION_DEP=
+source "$pkgdir/package.bash"
+[ -n "$SESSION_DEP" ] || die "$package/package.bash does not set SESSION_DEP"
+
+# Reads the <PREFIX>_VERSION/_MIRROR/_SOURCE/_HASH settings of the session-deps recipe, whose
+# variables are named after the recipe (libngtcp2 -> LIBNGTCP2_*).  Only those set() lines are
+# read, expanding any ${VAR} references to earlier ones; the recipe's build instructions are for
+# session-deps' static builds and are ignored.
+recipe_file=$root/session-deps/deps/$SESSION_DEP.cmake
+[ -f "$recipe_file" ] || die "no session-deps recipe $recipe_file (is the submodule checked out?)"
+prefix=${SESSION_DEP^^}
+prefix=${prefix//[^A-Z0-9]/_}
+declare -A recipe=()
+while IFS= read -r line; do
+    [[ $line =~ ^set\((${prefix}_[A-Z0-9_]+)\ +([^\)]*)\)$ ]] || continue
+    name=${BASH_REMATCH[1]} value=${BASH_REMATCH[2]}
+    while [[ $value =~ \$\{([A-Za-z0-9_]+)\} ]]; do
+        ref=${BASH_REMATCH[1]}
+        [ -n "${recipe[$ref]+set}" ] || die "$recipe_file: $name uses \${$ref}, which isn't set before it"
+        value=${value//"\${$ref}"/"${recipe[$ref]}"}
+    done
+    recipe[$name]=$value
+done < "$recipe_file"
+for v in VERSION MIRROR SOURCE HASH; do
+    [ -n "${recipe[${prefix}_$v]:-}" ] || die "$recipe_file does not set ${prefix}_$v"
+done
+upstream=${recipe[${prefix}_VERSION]}
+tarball=${recipe[${prefix}_SOURCE]}
+read -ra mirrors <<< "${recipe[${prefix}_MIRROR]}"
+hash=${recipe[${prefix}_HASH]}
+hash_algo=${hash%%=*} hash_algo=${hash_algo,,} hash_hex=${hash#*=}
+command -v "${hash_algo}sum" >/dev/null || die "unsupported hash type in $recipe_file: $hash"
+
+changelog=$pkgdir/debian/changelog
+source_pkg=$(dpkg-parsechangelog -l "$changelog" -S Source)
+deb_version=$(dpkg-parsechangelog -l "$changelog" -S Version)
+[ "${deb_version%-*}" = "$upstream" ] || die "session-deps has $SESSION_DEP $upstream, but \
+$package/debian/changelog is for $deb_version: add a changelog entry for $upstream-0+stf1"
+version=$deb_version$suffix
+# Debian's convention: sid uploads go to unstable.
+if [ "$codename" = sid ]; then dist=unstable; else dist=$codename; fi
+
+apt_get='eatmydata apt-get -o=Dpkg::Use-Pty=0 -q'
+export DEBIAN_FRONTEND=noninteractive
+echo "man-db man-db/auto-update boolean false" | debconf-set-selections
+apt-get -o=Dpkg::Use-Pty=0 -q update
+apt-get -o=Dpkg::Use-Pty=0 -q install -y eatmydata
+install -m 644 "$root/deb.session.foundation.gpg" /usr/share/keyrings/session-foundation.gpg
+cat > /etc/apt/sources.list.d/session.sources <<SOURCES
+Types: deb
+URIs: https://deb.session.foundation https://deb.session.foundation/staging
+Suites: $codename
+Components: main
+Signed-By: /usr/share/keyrings/session-foundation.gpg
+SOURCES
+$apt_get update
+$apt_get install --no-install-recommends -y ca-certificates curl devscripts dpkg-dev equivs xz-utils
+
+out=$root/build/$package
+rm -rf "$out"
+mkdir -p "$out"
+cd "$out"
+
+check_pkg=$(sed -n 's/^Package: *//p' "$pkgdir/debian/control" | head -n 1)
+have=$(apt-cache policy "$check_pkg" | sed -n 's/^ *Candidate: *//p')
+if [ -n "$have" ] && [ "$have" != "(none)" ] && dpkg --compare-versions "$have" ge "$version"; then
+    msg "$check_pkg $have is already available (>= $version); nothing to build."
+    touch already-published
+    exit 0
+fi
+
+msg "Building $source_pkg $version for $codename"
+
+for m in "${mirrors[@]}"; do
+    curl -fsSL --retry 3 -o "$tarball" "$m/$tarball" && break
+    rm -f "$tarball"
+done
+[ -f "$tarball" ] || die "couldn't download $tarball from any of: ${mirrors[*]}"
+echo "$hash_hex  $tarball" | "${hash_algo}sum" -c
+
+orig=${source_pkg}_$upstream.orig.tar.${tarball##*.tar.}
+mv "$tarball" "$orig"
+mkdir src
+tar -xf "$orig" -C src --strip-components=1
+cp -a "$pkgdir/debian" src/debian
+
+cd src
+if declare -F prepare >/dev/null; then
+    PKGDIR=$pkgdir prepare "$codename"
+fi
+
+if [ "$version" != "$deb_version" ]; then
+    maintainer=$(dpkg-parsechangelog -S Maintainer)
+    export DEBFULLNAME=${maintainer% <*} DEBEMAIL=${maintainer##*<}
+    DEBEMAIL=${DEBEMAIL%>}
+    # -b because the distro suffix sorts *below* the plain version (1.2.3-0+stf1~deb13 <
+    # 1.2.3-0+stf1), which is what lets a newer distro's build outrank an older one's.
+    dch -b -v "$version" -D "$dist" --force-distribution "Build for $codename."
+fi
+
+# In a directory of its own, because mk-build-deps leaves a <source>-build-deps .buildinfo and
+# .changes behind, which ci-upload.sh would otherwise take for the build's own.
+mkdir ../build-deps
+cd ../build-deps
+mk-build-deps -i -r --tool="$apt_get -o Debug::pkgProblemResolver=yes --no-install-recommends -y" ../src/debian/control
+cd ../src
+dpkg-buildpackage -b -uc -us -j"${JOBS:-$(nproc)}"
+cd ..
+
+msg "Built:"
+ls -l ./*.deb ./*.ddeb 2>/dev/null >&2 || true
