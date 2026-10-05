@@ -1,3 +1,16 @@
+ngtcp2 (1.25.0+stf-1) unstable; urgency=medium
+
+  * Add upstream fixes merged after 1.25.0 (versioned +stf so that they
+    outrank any distro packaging of plain 1.25.0):
+    - d/p/fix-pktlen-check.patch: tighten the long header packet length
+      check on 32-bit platforms (upstream PR #2280).
+    - d/p/fix-fallback-dcid-retirement.patch: don't retire the fallback
+      DCID while it is still in use (upstream PR #2286).
+    - d/p/server-peer-ip-change-pmtu.patch: reset the max UDP payload size
+      when the peer's IP address changes (upstream PR #2323).
+
+ -- Jason Rhinelander <jason@session.foundation>  Mon, 05 Oct 2026 11:42:45 -0300
+
 ngtcp2 (1.25.0-0+stf1) unstable; urgency=medium
 
   * Session backport of new upstream version 1.25.0.
