@@ -13,10 +13,12 @@
 #
 # The upstream version and tarball come from the session-deps recipe named by SESSION_DEP in
 # <package>/package.bash, and the Debian revision from the top entry of <package>/debian/changelog,
-# which must be for that same upstream version.  If <package>/package.bash defines a prepare
-# function, it is run in the unpacked source tree (with the packaging in place and the build
-# dependencies not yet installed), with the codename as its argument, to adapt the packaging to
-# the distro.
+# which must be for that same upstream version, or for it with +stf appended when the package
+# carries patches that should outrank the distro's own packaging (see README.md).
+#
+# If <package>/package.bash defines a prepare function, it is run in the unpacked source tree (with
+# the packaging in place and the build dependencies not yet installed), with the codename as its
+# argument, to adapt the packaging to the distro.
 #
 # Nothing is built if apt (with deb.session.foundation and its /staging repo added) already offers
 # the package's first binary package at the version being built or newer; build/<package>/ then
@@ -71,8 +73,11 @@ command -v "${hash_algo}sum" >/dev/null || die "unsupported hash type in $recipe
 changelog=$pkgdir/debian/changelog
 source_pkg=$(dpkg-parsechangelog -l "$changelog" -S Source)
 deb_version=$(dpkg-parsechangelog -l "$changelog" -S Version)
-[ "${deb_version%-*}" = "$upstream" ] || die "session-deps has $SESSION_DEP $upstream, but \
-$package/debian/changelog is for $deb_version: add a changelog entry for $upstream-0+stf1"
+case ${deb_version%-*} in
+    "$upstream" | "$upstream+stf") upstream=${deb_version%-*} ;;
+    *) die "session-deps has $SESSION_DEP $upstream, but $package/debian/changelog is for \
+$deb_version: add a changelog entry for $upstream-0+stf1 (or $upstream+stf-1 if it carries patches)" ;;
+esac
 version=$deb_version$suffix
 # Debian's convention: sid uploads go to unstable.
 if [ "$codename" = sid ]; then dist=unstable; else dist=$codename; fi

@@ -15,6 +15,7 @@ Currently backported: **ngtcp2**, for every distro (even sid's ngtcp2 is older t
 | --- | --- |
 | `<package>/debian/` | the package's packaging, started from Debian sid's |
 | `<package>/package.bash` | `SESSION_DEP`, the session-deps recipe to take the version from, and an optional `prepare` function adapting the packaging to a distro |
+| `<package>/debian/patches/` | patches to the upstream source, for a `+stf` version (see below) |
 | `<package>/*.patch` | packaging changes `prepare` applies on some distros |
 | `build-deb` | builds one package for the distro it runs on |
 | `ci-upload.sh` | uploads a CI build to builds.session.codes (the same script as the packaging repos', bar the paths) |
@@ -30,14 +31,25 @@ ours.  The `+` keeps it above plain `X.Y.Z`, so that it satisfies `>= X.Y.Z` dep
 symbols files, for instance); a `~` there would not.  The one release that doesn't supersede it is
 an Ubuntu-only `X.Y.Z-0ubuntu1`.
 
+A backport that carries patches (fixes from upstream that are not yet in a release) must instead
+outrank the distro's packaging of the same upstream version, which lacks them, so it is versioned
+`X.Y.Z+stf-N`.  `X.Y.Z+stf` sorts above every `X.Y.Z-*` the distro could publish, but below its
+next upstream version, which is expected to include the fixes and so should take over.  It also
+puts `+stf` in the upstream version, so that packages depending on `>= ${source:Upstream-Version}`
+of one built against ours (libquic, for instance) can't be satisfied by an unpatched `X.Y.Z`.  The
+patches go in `<package>/debian/patches/` (with a `series` file), applied by `dpkg-buildpackage`.
+
 The upstream version comes from session-deps and `N` from the top entry of
-`<package>/debian/changelog`, which must be for the same upstream version: `build-deb` refuses to
-build otherwise.  So:
+`<package>/debian/changelog`, which must be for the same upstream version (with or without `+stf`):
+`build-deb` refuses to build otherwise.  So:
 
 - **New upstream version:** update the session-deps submodule, then add a changelog entry for
-  `X.Y.Z-0+stf1` (distribution `unstable`).  Check the build log for `dpkg-gensymbols` warnings
-  about new symbols, and add those to the `.symbols` files with the new version.
+  `X.Y.Z-0+stf1` (distribution `unstable`), dropping any `debian/patches` the new version
+  includes.  Check the build log for `dpkg-gensymbols` warnings about new symbols, and add those
+  to the `.symbols` files with the new version.
 - **Packaging change, same upstream version:** add a changelog entry for `X.Y.Z-0+stf(N+1)`.
+- **Adding patches to `X.Y.Z`:** add a changelog entry for `X.Y.Z+stf-1`, then `X.Y.Z+stf-(N+1)`
+  for any later change to the patches or packaging.
 
 `build-deb` adds the per-distro changelog entry with the suffix itself.
 
