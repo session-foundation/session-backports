@@ -74,7 +74,7 @@ changelog=$pkgdir/debian/changelog
 source_pkg=$(dpkg-parsechangelog -l "$changelog" -S Source)
 deb_version=$(dpkg-parsechangelog -l "$changelog" -S Version)
 case ${deb_version%-*} in
-    "$upstream" | "$upstream+stf") upstream=${deb_version%-*} ;;
+    "$upstream" | "$upstream+stf"*) upstream=${deb_version%-*} ;;
     *) die "session-deps has $SESSION_DEP $upstream, but $package/debian/changelog is for \
 $deb_version: add a changelog entry for $upstream-0+stf1 (or $upstream+stf-1 if it carries patches)" ;;
 esac
