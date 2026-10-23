@@ -135,9 +135,9 @@ diff -urN a/debian/libngtcp2-crypto-ossl-dev.install b/debian/libngtcp2-crypto-o
 diff -urN a/debian/rules b/debian/rules
 --- a/debian/rules	2026-07-15 17:58:35.000000000 -0300
 +++ b/debian/rules	2026-10-01 20:55:09.151706602 -0300
-@@ -6,7 +6,7 @@
- override_dh_auto_configure:
+@@ -7,7 +7,7 @@
  	dh_auto_configure -- \
+ 		--disable-mempool \
  		--with-gnutls \
 -		--with-openssl
 +		--without-openssl
