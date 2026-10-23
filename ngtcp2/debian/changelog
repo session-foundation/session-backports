@@ -1,3 +1,10 @@
+ngtcp2 (1.25.0+stf2-1) unstable; urgency=medium
+
+  * Disable internal mempool to reduce memory usage.  (Temp fix pending
+    upstream issue 2331).
+
+ -- Jason Rhinelander <jason@session.foundation>  Fri, 23 Oct 2026 12:34:33 -0300
+
 ngtcp2 (1.25.0+stf-1) unstable; urgency=medium
 
   * Add upstream fixes merged after 1.25.0 (versioned +stf so that they
