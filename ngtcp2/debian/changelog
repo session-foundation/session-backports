@@ -1,3 +1,15 @@
+ngtcp2 (1.26.0+stf1-1) unstable; urgency=medium
+
+  * Session backport of new upstream version 1.26.0.
+  * Drop d/p/fix-pktlen-check.patch, d/p/fix-fallback-dcid-retirement.patch
+    and d/p/server-peer-ip-change-pmtu.patch, all included in 1.26.0.
+  * Keep building with --disable-mempool, versioned +stf so that this
+    outranks any distro packaging of plain 1.26.0: upstream issue 2331 is
+    not yet resolved.
+  * d/libngtcp2-16.symbols: New symbol.
+
+ -- Jason Rhinelander <jason@session.foundation>  Mon, 02 Nov 2026 16:20:19 -0400
+
 ngtcp2 (1.25.0+stf2-1) unstable; urgency=medium
 
   * Disable internal mempool to reduce memory usage.  (Temp fix pending
